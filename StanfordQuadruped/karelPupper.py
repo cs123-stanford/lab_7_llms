@@ -371,6 +371,29 @@ class Pupper:
                 self.controller.run(self.state, command)
                 self.hardware_interface.set_cartesian_positions(self.state.final_foot_locations)
                 last_loop = time.time()
+
+    def nod(self):
+        command = Command(self.config.default_z_ref)
+        last_loop = time.time()
+        going_up = 0
+        while True:
+            if going_up > 60:
+                break
+            if going_up > 30:
+                if time.time() - last_loop >= self.config.dt:
+                    self.__update_command(command, pitch_rate=-2, height_rate=0.1)
+                    self.controller.run(self.state, command)
+                    self.hardware_interface.set_cartesian_positions(self.state.final_foot_locations)
+                    last_loop = time.time()
+                    going_up += 1
+            else:
+                if time.time() - last_loop >= self.config.dt:
+                    self.__update_command(command, pitch_rate=2, height_rate=-0.1)
+                    self.controller.run(self.state, command)
+                    self.hardware_interface.set_cartesian_positions(self.state.final_foot_locations)
+                    last_loop = time.time()
+                    going_up += 1
+
     '''
     roll - walking at angle
     height - walking shorter
@@ -397,5 +420,34 @@ class Pupper:
             self.state.roll + message_dt * self.config.roll_speed * roll_movement
         )
 
+    def __update_command(self, command, pitch_rate=0, roll_rate=0, height_rate=0, yaw_rate=0):
+        message_dt = 1.0 / 20
+        pitch = pitch_rate
+        deadbanded_pitch = deadband(pitch, self.config.pitch_deadband)
+        pitch_rate = clipped_first_order_filter(
+            self.state.pitch,
+            deadbanded_pitch,
+            self.config.max_pitch_rate,
+            self.config.pitch_time_constant,
+        )
+        command.pitch = self.state.pitch + message_dt * pitch_rate
+
+        height_movement = height_rate
+        command.height = (
+            self.state.height - message_dt * self.config.z_speed * height_movement
+        )
+        yaw_movement = yaw_rate
+        command.yaw = (
+            self.state.yaw_rate - message_dt * self.config.max_yaw_rate * yaw_movement
+        )
+        roll_movement = roll_rate
+        command.roll = (
+            self.state.roll + message_dt * self.config.roll_speed * roll_movement
+        )
+
+    def __del__(self):
+        self.slowRest()
+        self.rest()
+        print(self.name, "going to sleep!")
 
     
