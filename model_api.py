@@ -21,13 +21,10 @@ def process_result(result, conversation = [], save = True):
 def make_message(message, role = "user"):
     return {"role": role, "content": message}
 
+#TODO: Step 4. Implement get_response, which takes in a message and coversation, and uses GPT 3.5 turbo to return an input to process_result()
 def get_response(message, conversation = []):
-    conversation.append(make_message(message))
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo", 
-        messages=conversation,
-    )
-    return process_result(completion, conversation)
+    # return process_result( , )
+    return
 
 def save_conversation(conversation, filename = "output.txt"):
     with open(filename, "w") as f:
