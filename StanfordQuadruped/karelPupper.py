@@ -398,27 +398,27 @@ class Pupper:
     roll - walking at angle
     height - walking shorter
     '''
-    def __update_command(self, command):
-        message_dt = 1.0 / 20
-        pitch = 0
-        deadbanded_pitch = deadband(pitch, self.config.pitch_deadband)
-        pitch_rate = clipped_first_order_filter(
-            self.state.pitch,
-            deadbanded_pitch,
-            self.config.max_pitch_rate,
-            self.config.pitch_time_constant,
-        )
-        command.pitch = self.state.pitch + message_dt * pitch_rate
+    # def __update_command(self, command):
+    #     message_dt = 1.0 / 20
+    #     pitch = 0
+    #     deadbanded_pitch = deadband(pitch, self.config.pitch_deadband)
+    #     pitch_rate = clipped_first_order_filter(
+    #         self.state.pitch,
+    #         deadbanded_pitch,
+    #         self.config.max_pitch_rate,
+    #         self.config.pitch_time_constant,
+    #     )
+    #     command.pitch = self.state.pitch + message_dt * pitch_rate
 
-        height_movement = 0
-        command.height = (
-            self.state.height - message_dt * self.config.z_speed * height_movement
-        )
+    #     height_movement = 0
+    #     command.height = (
+    #         self.state.height - message_dt * self.config.z_speed * height_movement
+    #     )
 
-        roll_movement = 0
-        command.roll = (
-            self.state.roll + message_dt * self.config.roll_speed * roll_movement
-        )
+    #     roll_movement = 0
+    #     command.roll = (
+    #         self.state.roll + message_dt * self.config.roll_speed * roll_movement
+    #     )
 
     def __update_command(self, command, pitch_rate=0, roll_rate=0, height_rate=0, yaw_rate=0):
         message_dt = 1.0 / 20
