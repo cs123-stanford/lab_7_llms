@@ -28,7 +28,12 @@ def turn_for_time(self, duration, speed, behavior=BehaviorState.TROT):
 '''
 The Pupper moves forward for time in seconds (s) at a specified speed [0, 1]
 '''
+def nod(self):
+'''
+The Pupper nods its head up and down
+'''
 def forward_for_time(self, duration, speed, behavior=BehaviorState.TROT):
 def move_until_blocked(self, speed, behavior=BehaviorState.TROT):
 # sit down
 def slowRest(self):
+
